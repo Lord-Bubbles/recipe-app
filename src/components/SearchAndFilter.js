@@ -20,12 +20,12 @@ class SearchAndFilter extends React.Component {
 
   // Determines whether modal window is open or not
   setModal = (flag) => {
-    this.setState({modalOpen: flag});
+    this.setState({ modalOpen: flag });
   }
 
   // Keeps track of the user input for recipe name
   setName = (event) => {
-    this.setState({name: event.target.value})
+    this.setState({ name: event.target.value })
   }
 
   // Handles getting the ingredients the user inputted to filter on
@@ -36,12 +36,12 @@ class SearchAndFilter extends React.Component {
     } else {
       ingredients[index] = event.target.value;
     }
-    this.setState({ingredients: ingredients});
+    this.setState({ ingredients: ingredients });
   }
 
   // Handles creating a new input field with an option to add more every time the user clicks the plus button
   addInput = () => {
-    const {inputFields, ingredients} = this.state;
+    const { inputFields, ingredients } = this.state;
     const inputs = [...inputFields];
     const length = inputFields.length;
     inputs.push(
@@ -53,7 +53,7 @@ class SearchAndFilter extends React.Component {
         <br></br>
       </React.Fragment>
     )
-    this.setState({inputFields: inputs}, () => {
+    this.setState({ inputFields: inputs }, () => {
       if (length != 0) {
         document.getElementById(`form-add-${length-1}`).classList.add("hidden");
       }
@@ -63,23 +63,23 @@ class SearchAndFilter extends React.Component {
 
   // Keeps track of the user input for min time
   setMin = (event) => {
-    this.setState({minTime: event.target.value});
+    this.setState({ minTime: event.target.value });
   }
 
   // Keeps track of the user input for max time
   setMax = (event) => {
-    this.setState({maxTime: event.target.value});
+    this.setState({ maxTime: event.target.value });
   }
 
   // Keeps track of the user input for created by
   setCreator = (event) => {
-    this.setState({createdBy: event.target.value});
+    this.setState({ createdBy: event.target.value });
   }
 
   // Returns a valid query parameter string depending on the ingredients state
-  createIngredientQueryParam = ()  => {
+  createIngredientQueryParam = () => {
     let res = "";
-    let {ingredients} = this.state;
+    let { ingredients } = this.state;
     for (let i in ingredients) {
       res += `ingredients=${ingredients[i]}&`
     }
@@ -97,26 +97,26 @@ class SearchAndFilter extends React.Component {
         "Content-Type": "application/json"
       }
     })
-    .then(res => res.json())
-    .then(data => this.props.setRecipes(data));
+      .then(res => res.json())
+      .then(data => this.props.setRecipes(data));
   }
 
   // Used by the search bar to filter the recipes displayed
   onSearch = async (event) => {
-    this.setState({name: event.target.value}, await this.filterRecipes());
+    this.setState({ name: event.target.value }, await this.filterRecipes());
   }
 
   // Used by the submit button to filter the recipes displayed and closes modal window
   onSubmit = async () => {
     await this.filterRecipes();
-    this.setState({modalOpen: false});
+    this.setState({ modalOpen: false });
   }
 
   render() {
     return (
       <Container>
         <InputGroup>
-          <FormControl 
+          <FormControl
             type="text"
             placeholder="Search"
             aria-label="Search"
@@ -127,9 +127,9 @@ class SearchAndFilter extends React.Component {
           </InputGroup.Text>
         </InputGroup>
         <Button onClick={() => this.setModal(true)} type="button">Advanced Search</Button>
-        <Modal 
-          show={this.state.modalOpen} 
-          onHide={() => this.setModal(false)} 
+        <Modal
+          show={this.state.modalOpen}
+          onHide={() => this.setModal(false)}
           centered="true"
           size="lg"
         >
