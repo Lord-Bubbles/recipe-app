@@ -1,0 +1,18 @@
+.card-title {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: none;
+  overflow: hidden;
+  outline: none;
+}
+
+.modal-box {
+  border-style: ridge;
+  outline: black;
+  background-color: transparent;
+}
+
+.modalTitle {
+  display: inline;
+  padding-left: 75%;
+}

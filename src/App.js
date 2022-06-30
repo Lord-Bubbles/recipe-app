@@ -2,25 +2,41 @@ import './App.css';
 import React from 'react';
 import SearchAndFilter from './components/SearchAndFilter';
 import jwt_decode from "jwt-decode";
-import 'bootstrap/dist/css/bootstrap.min.css';
 import {Dropdown, DropdownButton}  from "react-bootstrap";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/js/bootstrap.bundle.min";
 import MyRecipes from './components/MyRecipes';
 import MyMealPlan from './components/MyMealPlan';
+import RecipeView from "./components/RecipeView";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       token: null,
-      page: "Home",
       user: null,
+      recipes: [],
+      currentPage: 1,
+      totalCount: 0,
+      pageSize: 100,
+      page: "Home",
     };
   }
 
-  handleCallbackResponse = (response) => {
-    this.setState({token: response.credential});
+  handleCallbackResponse = async (response) => {
+    this.setState({ token: response.credential });
     let userObject = jwt_decode(response.credential);
-    this.setState({user: userObject});
+    fetch("/users", {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: userObject.email,
+        name: userObject.name
+      })
+    });
     document.getElementById("signInDiv").hidden = true;
   }
 
@@ -29,7 +45,7 @@ class App extends React.Component {
     document.getElementById("signInDiv").hidden = false;
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     /* global google */
     google.accounts.id.initialize({
       client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
@@ -38,12 +54,26 @@ class App extends React.Component {
 
     google.accounts.id.renderButton(
       document.getElementById("signInDiv"),
-      { theme: "outline", size: "large"}
+      { theme: "outline", size: "large" }
     );
+
+    //await this.fetchCurRecipes();
+  }
+
+  fetchCurRecipes = async () => {
+    fetch(`/recipes?page=${this.state.currentPage}&limit=${this.state.pageSize}`, {
+      method: "GET",
+      headers: {
+        "Accept": "applicatiohn/json",
+        "Content-Type": "application/json"
+      }
+    })
+      .then(res => res.json())
+      .then(data => this.setState({ recipes: data.recipes, totalCount: data.count }));
   }
 
   navigateTo = (route, event) => {
-    this.setState({page: route}, () => {
+    this.setState({ page: route }, () => {
       if (this.state.page == "Sign out") {
         this.handleLogout();
       }
@@ -51,19 +81,39 @@ class App extends React.Component {
   }
 
   searchRender = () => {
-    const {page} = this.state;
-    switch(page) {
+    let { page } = this.state;
+    switch (page) {
       case "My Recipes":
         return (
           <React.Fragment>
-            <SearchAndFilter />
+            <SearchAndFilter 
+              page={this.state.currentPage} 
+              limit={this.state.pageSize}
+              setRecipes={recipes => this.setRecipes(recipes)} 
+            />
             <MyRecipes />
           </React.Fragment>
         );
       case "My Meal Plan":
         return <MyMealPlan />;
       default:
-        return <SearchAndFilter />
+        return (
+          <React.Fragment>
+            <SearchAndFilter 
+              page={this.state.currentPage} 
+              limit={this.state.pageSize}
+              setRecipes={recipes => this.setRecipes(recipes)} 
+            />
+            <RecipeView
+              data={this.state.recipes}
+              currentPage={this.state.currentPage}
+              total={this.state.totalCount}
+              pageSize={this.state.pageSize}
+              onPageChange={data => this.onPageChange(page)}
+              setRecipes={recipes => this.setRecipes(recipes)}
+            />
+          </React.Fragment>
+        );
     }
   }
   
@@ -81,6 +131,15 @@ class App extends React.Component {
       )
     }
     return <React.Fragment></React.Fragment>
+  }
+
+  onPageChange = (data) => {
+    const { currentPage, totalPages, pageLimit } = data;
+    
+  }
+
+  setRecipes = (recipes) => {
+    this.setState({ recipes: recipes });
   }
 
   render() {
