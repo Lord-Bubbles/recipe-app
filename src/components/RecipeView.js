@@ -21,8 +21,8 @@ class RecipeView extends React.Component {
   render() {
     return (
       <div>
-        {this.createRecipes()}
-        <Pagination />
+        {/*this.createRecipes()*/}
+        {/*<Pagination />*/}
       </div>
     );
   }

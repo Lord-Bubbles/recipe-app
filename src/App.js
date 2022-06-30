@@ -23,10 +23,20 @@ class App extends React.Component {
     };
   }
 
-  handleCallbackResponse = (response) => {
+  handleCallbackResponse = async (response) => {
     this.setState({ token: response.credential });
     let userObject = jwt_decode(response.credential);
-    this.setState({ user: userObject });
+    fetch("/users", {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: userObject.email,
+        name: userObject.name
+      })
+    });
     document.getElementById("signInDiv").hidden = true;
   }
 
@@ -47,7 +57,7 @@ class App extends React.Component {
       { theme: "outline", size: "large" }
     );
 
-    await this.fetchCurRecipes();
+    //await this.fetchCurRecipes();
   }
 
   fetchCurRecipes = async () => {
