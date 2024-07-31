@@ -1,5 +1,5 @@
 import asyncHandler from 'express-async-handler';
-import User from '../database/UserModel.js';
+import User from '#models/UserModel';
 
 // @desc   Adds new user if it doesnt exist and returns newly created user,
 //         otherwise return existing user from database. A unique user is

@@ -1,80 +1,35 @@
-import React from 'react';
 import SearchAndFilter from './SearchAndFilter';
-//import { jwtDecode } from 'jwt-decode';
-import { useGoogleLogin, googleLogout } from '@react-oauth/google';
-import {
-  Dropdown,
-  DropdownButton,
-  Navbar,
-  Container,
-  Button,
-} from 'react-bootstrap';
+import { useGoogleLogin } from '@react-oauth/google';
+import { Dropdown, Navbar, Container, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import useAuthStore from '../store/authStore';
+import { useShallow } from 'zustand/react/shallow';
+import { FcGoogle } from 'react-icons/fc';
 
 // Render nav bar that contains search bar, dropdown menu, login
-export default function Header(props) {
-  const {
-    setToken,
-    setUser,
-    setIngredients,
-    setCreator,
-    setMinTime,
-    setMaxTime,
-    setName,
-    onPageChange,
-    user,
-    page,
-    name,
-  } = props;
+export default function Header({
+  setIngredients,
+  setCreator,
+  setMinTime,
+  setMaxTime,
+  setName,
+  onPageChange,
+  page,
+  name
+}) {
+  const [user, login, logout] = useAuthStore(
+    useShallow((state) => [state.user, state.login, state.logout])
+  );
 
-  const login = useGoogleLogin({
-    onSuccess: (codeResponse) => {
-      fetch('/api/auth/google', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          code: codeResponse.code,
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setToken(data.tokens);
-          setUser(data.user);
-          //addUser(data.id_token);
-        })
-        .catch((error) =>
-          console.log('Error exchanging authorization code: ' + error)
-        );
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (codeResponse) => {
+      await login(codeResponse.code);
     },
     onError: (e) => {
       console.log('Error has occured while logging in: ' + e);
     },
-    flow: 'auth-code',
+    flow: 'auth-code'
   });
-
-  // const addUser = (token) => {
-  //   const userObject = jwtDecode(token);
-  //   fetch('/api/users', {
-  //     method: 'PUT',
-  //     headers: {
-  //       Accept: 'application/json',
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({
-  //       email: userObject.email,
-  //       name: userObject.name,
-  //     }),
-  //   })
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       if (data.data) {
-  //         setUser(data.data);
-  //       }
-  //     })
-  //     .catch((err) => console.log('callbackResponse Error: ', err));
-  // };
 
   const navigate = useNavigate();
 
@@ -87,7 +42,7 @@ export default function Header(props) {
         navigate(`/user/${user.name}/mealplan`);
         break;
       case 'Sign Out':
-        googleLogout();
+        logout();
       // eslint-disable-next-line no-fallthrough
       default:
         navigate('/');
@@ -109,26 +64,35 @@ export default function Header(props) {
         />
         <div className="justify-content-end">
           {user ? (
-            <DropdownButton
-              title="My Account"
-              menuRole="menu"
-              onSelect={(key) => navigateTo(key)}
-            >
-              <Dropdown.Item as="button" eventKey="Home">
-                Home
-              </Dropdown.Item>
-              <Dropdown.Item as="button" eventKey="My Recipes">
-                My Recipes
-              </Dropdown.Item>
-              <Dropdown.Item as="button" eventKey="My Meal Plan">
-                My Meal Plan
-              </Dropdown.Item>
-              <Dropdown.Item as="button" eventKey="Sign Out">
-                Sign Out
-              </Dropdown.Item>
-            </DropdownButton>
+            <>
+              <Dropdown onSelect={(key) => navigateTo(key)}>
+                <Dropdown.Toggle>
+                  <img src={user.profile} alt="Profile picture of user" />
+                  <span>My Account</span>
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item as="button" eventKey="Home">
+                    Home
+                  </Dropdown.Item>
+                  <Dropdown.Item as="button" eventKey="My Recipes">
+                    My Recipes
+                  </Dropdown.Item>
+                  <Dropdown.Item as="button" eventKey="My Meal Plan">
+                    My Meal Plan
+                  </Dropdown.Item>
+                  <Dropdown.Item as="button" eventKey="Sign Out">
+                    Sign Out
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </>
           ) : (
-            <Button onClick={() => login()}>Sign In</Button>
+            <>
+              <Button onClick={() => googleLogin()} variant="outline-dark">
+                <FcGoogle />
+                <span className="ms-1">Sign In</span>
+              </Button>
+            </>
           )}
         </div>
       </Container>

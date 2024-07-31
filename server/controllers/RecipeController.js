@@ -1,21 +1,6 @@
 import asyncHandler from 'express-async-handler';
-import Recipe from '../database/RecipeModel.js';
-import { OAuth2Client } from 'google-auth-library';
-import { jwtDecode } from 'jwt-decode';
-import { uploadImage } from '../database/Storage.js';
-
-const client = new OAuth2Client(process.env.REACT_APP_GOOGLE_CLIENT_ID);
-
-// Used for verification
-const verify = async (token) => {
-  const ticket = await client.verifyIdToken({
-    idToken: token,
-    audience: process.env.REACT_APP_GOOGLE_CLIENT_ID,
-  });
-  const payload = ticket.getPayload();
-  const obj = jwtDecode(token);
-  return JSON.stringify(payload) === JSON.stringify(obj);
-};
+import Recipe from '#models/RecipeModel';
+import { uploadImage } from '#database/Storage';
 
 // @desc   Gets recipes from the database based on user query parameters
 // @route  GET /api/recipes
@@ -62,12 +47,6 @@ export const addRecipe = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error('Body missing from request!');
   }
-  if (!verify(req.headers.authorization)) {
-    res.status(400);
-    throw new Error(
-      'Unauthorized access detected! Please login before adding a recipe!'
-    );
-  }
   if (!req.file) {
     res.status(400);
     throw new Error(`An image file wasn't uploaded!`);
@@ -97,12 +76,6 @@ export const deleteRecipe = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error('Recipe id missing from query parameters!');
   }
-  if (!verify(req.headers.authorization)) {
-    res.status(400);
-    throw new Error(
-      'Unauthorized access detected! Only the recipe owner can delete this!'
-    );
-  }
   const recipe = await Recipe.findOneAndRemove({ _id: id });
   recipe
     ? res.status(200).send('Recipe successfully removed from database!')
@@ -121,12 +94,6 @@ export const modifyRecipe = asyncHandler(async (req, res) => {
   if (!id) {
     res.status(400);
     throw new Error('Recipe id missing from request parameters!');
-  }
-  if (!verify(req.headers.authorization)) {
-    res.status(400);
-    throw new Error(
-      'Unauthorized access detected! Only the recipe owner can edit this!'
-    );
   }
   const recipe = await Recipe.findOneAndUpdate({ _id: id }, req.body, {
     new: true,
