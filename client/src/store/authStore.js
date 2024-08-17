@@ -3,7 +3,8 @@ import { create } from 'zustand';
 const authInitialState = {
   accessToken: null,
   idToken: null,
-  user: null
+  user: null,
+  isAuth: null
 };
 
 const useAuthStore = create((set, get) => ({
@@ -20,10 +21,11 @@ const useAuthStore = create((set, get) => ({
       })
     });
     if (!response.ok) {
+      set({ isAuth: false });
       throw new Error('Unexpected error occurred while logging in');
     }
     const { accessToken, user, idToken } = await response.json();
-    set({ user, accessToken, idToken });
+    set({ user, accessToken, idToken, isAuth: true });
   },
   refresh: async () => {
     const response = await fetch('/api/auth/google/refresh', {
@@ -34,11 +36,11 @@ const useAuthStore = create((set, get) => ({
       }
     });
     if (!response.ok) {
-      set(authInitialState);
-      return;
+      set({ ...authInitialState, isAuth: false });
+      throw new Error('Invalid refresh token');
     }
     const { accessToken, user, idToken } = await response.json();
-    set({ user, accessToken, idToken });
+    set({ user, accessToken, idToken, isAuth: true });
   },
   logout: async () => {
     await fetch('/api/auth/google/logout', {
@@ -49,7 +51,7 @@ const useAuthStore = create((set, get) => ({
         Authorization: `Bearer ${get().idToken}`
       }
     });
-    set(authInitialState);
+    set({ ...authInitialState, isAuth: false });
   }
 }));
 

@@ -1,7 +1,6 @@
-import React from 'react';
 import Pagination from './Pagination';
 import Recipe from './Recipe';
-import '../styles/RecipeView.css';
+import '@/styles/RecipeView.css';
 import { Row, Col } from 'react-bootstrap';
 
 // Displays recipes in a grid, contains control of how many per page and pagination
@@ -13,7 +12,7 @@ export default function RecipeView(props) {
     totalCount,
     pageSize,
     setPageSize,
-    setCheckedRecipe,
+    setCheckedRecipe
   } = props;
 
   return (

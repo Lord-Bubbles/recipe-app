@@ -1,6 +1,5 @@
-import React from 'react';
 import classnames from 'classnames';
-import '../styles/Pagination.scss';
+import '@/styles/Pagination.scss';
 
 const range = (from, to) => {
   let length = to - from + 1;
@@ -16,7 +15,7 @@ export default function Pagination(props) {
     onPageChange,
     currentPage,
     totalCount,
-    pageSize,
+    pageSize
   } = props;
 
   const handlePageChange = (amount) => {
@@ -86,7 +85,7 @@ export default function Pagination(props) {
     <ul className={classnames('pagination-container')}>
       <li
         className={classnames('pagination-item', {
-          disabled: currentPage === 1,
+          disabled: currentPage === 1
         })}
         onClick={() => handlePageChange(-1)}
       >
@@ -102,7 +101,7 @@ export default function Pagination(props) {
           return (
             <li
               className={classnames('pagination-item', {
-                selected: pageNum === currentPage,
+                selected: pageNum === currentPage
               })}
               onClick={() => onPageChange(pageNum)}
             >
@@ -113,7 +112,7 @@ export default function Pagination(props) {
       }
       <li
         className={classnames('pagination-item', {
-          disabled: currentPage === lastPage,
+          disabled: currentPage === lastPage
         })}
         onClick={() => handlePageChange(1)}
       >

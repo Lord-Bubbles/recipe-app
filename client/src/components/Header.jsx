@@ -1,25 +1,28 @@
 import SearchAndFilter from './SearchAndFilter';
-import useAuthStore from '../store/authStore';
+import useAuthStore from '@/store/authStore';
 import { useGoogleLogin } from '@react-oauth/google';
 import { Dropdown, Navbar, Container, Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import { useShallow } from 'zustand/react/shallow';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
+import { useShallow } from 'zustand/react/shallow';
 
 // Render nav bar that contains search bar, dropdown menu, login
-export default function Header({
-  setIngredients,
-  setCreator,
-  setMinTime,
-  setMaxTime,
-  setName,
-  onPageChange,
-  page,
-  name
-}) {
+export default function Header(props) {
+  const {
+    setIngredients,
+    setCreator,
+    setMinTime,
+    setMaxTime,
+    setName,
+    onPageChange,
+    page,
+    name
+  } = props;
+
   const [user, login, logout] = useAuthStore(
     useShallow((state) => [state.user, state.login, state.logout])
   );
+  const location = useLocation();
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (codeResponse) => {
@@ -36,32 +39,34 @@ export default function Header({
   const navigateTo = (route) => {
     switch (route) {
       case 'My Recipes':
-        navigate(`/user/${user.name}/recipes`);
+        navigate(`/my-recipes`);
         break;
       case 'My Meal Plan':
-        navigate(`/user/${user.name}/mealplan`);
+        navigate(`/my-mealplan`);
         break;
       case 'Sign Out':
         logout();
       // eslint-disable-next-line no-fallthrough
       default:
-        navigate('/');
+        navigate('/', { replace: true });
     }
   };
 
   return (
     <Navbar className="mb-3">
       <Container fluid>
-        <SearchAndFilter
-          setIngredients={(ingredients) => setIngredients(ingredients)}
-          setCreator={(user) => setCreator(user)}
-          setMinTime={(time) => setMinTime(time)}
-          setMaxTime={(time) => setMaxTime(time)}
-          setName={(name) => setName(name)}
-          onPageChange={(page) => onPageChange(page)}
-          page={page}
-          name={name}
-        />
+        {location.pathname !== '/my-mealplan' && (
+          <SearchAndFilter
+            setIngredients={(ingredients) => setIngredients(ingredients)}
+            setCreator={(user) => setCreator(user)}
+            setMinTime={(time) => setMinTime(time)}
+            setMaxTime={(time) => setMaxTime(time)}
+            setName={(name) => setName(name)}
+            onPageChange={(page) => onPageChange(page)}
+            page={page}
+            name={name}
+          />
+        )}
         <div className="justify-content-end">
           {user ? (
             <>

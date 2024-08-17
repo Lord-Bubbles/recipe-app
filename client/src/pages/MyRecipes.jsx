@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import { useFetchRecipes } from './useFetchRecipes';
-import RecipeView from './RecipeView';
-import Header from './Header';
+import { useFetchRecipes } from '@/components/useFetchRecipes';
 import { IoAddSharp } from 'react-icons/io5';
 import { GrEdit } from 'react-icons/gr';
 import { BsTrash3Fill } from 'react-icons/bs';
-import '../styles/MyRecipes.css';
-import RecipeModalForm from './RecipeModalForm';
+import RecipeView from '@/components/RecipeView';
+import Header from '@/components/Header';
+import '@/styles/MyRecipes.css';
+import RecipeModalForm from '@/components/RecipeModalForm';
+import useAuthStore from '@/store/authStore';
 
 // Renders the my recipe page when user selects it under dropdown menu
-export default function MyRecipes(props) {
-  const { user, token, setUser } = props;
+export default function MyRecipes() {
   const [name, setName] = useState('');
   const [ingredients, setIngredients] = useState([]);
   const [minTime, setMinTime] = useState('');
@@ -21,6 +21,8 @@ export default function MyRecipes(props) {
   const [modal, setModal] = useState(false);
   const [mode, setMode] = useState('');
 
+  const user = useAuthStore((state) => state.user);
+
   const { recipes, totalCount } = useFetchRecipes(
     currentPage,
     pageSize,
@@ -28,7 +30,7 @@ export default function MyRecipes(props) {
     name,
     minTime,
     maxTime,
-    user.name
+    user?.name
   );
 
   const onClick = (mode) => {
@@ -47,7 +49,6 @@ export default function MyRecipes(props) {
         user={user}
         page={currentPage}
         name={name}
-        setUser={(user) => setUser(user)}
       />
       <RecipeView
         data={recipes}
@@ -90,7 +91,6 @@ export default function MyRecipes(props) {
         <RecipeModalForm
           modal={modal}
           setModal={(flag) => setModal(flag)}
-          token={token}
           user={user}
           data={
             checkedRecipe

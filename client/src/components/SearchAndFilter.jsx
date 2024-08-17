@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { InputGroup, Button, Form, Container } from 'react-bootstrap';
 import { BsSearch } from 'react-icons/bs';
-import SearchModalForm from './SearchModalForm';
 import { useSearchParams } from 'react-router-dom';
+import SearchModalForm from './SearchModalForm';
 
 // Renders the search bar to filter recipes
 export default function SearchAndFilter(props) {

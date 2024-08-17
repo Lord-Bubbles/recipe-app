@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, Modal, Form } from 'react-bootstrap';
-import '../styles/Recipe.css';
+import '@/styles/Recipe.css';
 
 // Renders each recipe as a card
 export default function Recipe(props) {
@@ -37,11 +37,7 @@ export default function Recipe(props) {
           </div>
         )}
         <button className="card-button" onClick={() => setModal(true)}>
-          <Card.Img
-            variant="top"
-            src={imageUrl}
-            style={{ height: '20vh', maxWidth: '100%' }}
-          />
+          <Card.Img variant="top" src={imageUrl} style={{ height: '20vh', maxWidth: '100%' }} />
           <Card.Title>{name}</Card.Title>
         </button>
       </Card>
@@ -50,11 +46,7 @@ export default function Recipe(props) {
           <Modal.Title>{name}</Modal.Title>
           <Modal.Title className="modal-time">{time}</Modal.Title>
         </Modal.Header>
-        <img
-          src={imageUrl}
-          alt={name}
-          style={{ height: '50vh', maxWidth: '100%' }}
-        />
+        <img src={imageUrl} alt={name} style={{ height: '50vh', maxWidth: '100%' }} />
         <Modal.Body>
           <div className="modal-box">
             Ingredients:

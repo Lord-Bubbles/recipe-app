@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Form, Modal, InputGroup, Button } from 'react-bootstrap';
 
 const initialRender = (mode, data) => {
@@ -7,7 +7,7 @@ const initialRender = (mode, data) => {
     ingredients: mode === 'edit' ? data.ingredients : [''],
     method: mode === 'edit' ? data.method : [''],
     imageUrl: mode === 'edit' ? data.imageUrl : null,
-    cookTime: mode === 'edit' ? data.time : 0,
+    cookTime: mode === 'edit' ? data.time : 0
   };
 };
 
@@ -18,13 +18,12 @@ export default function RecipeModalForm(props) {
   const [formData, setFormData] = useState(() => initialRender(mode, data));
 
   const onSubmit = (event) => {
-    const form =
-      /*event.currentTarget;*/ document.getElementById('recipe-form');
+    const form = document.getElementById('recipe-form');
     if (form.checkValidity()) {
       let form = new FormData();
       let endpoint = '/api/recipes';
       let headers = {
-        Authorization: token,
+        Authorization: token
       };
       if (mode !== 'add') {
         endpoint += `/${data._id}`;
@@ -41,7 +40,7 @@ export default function RecipeModalForm(props) {
       fetch(endpoint, {
         method: mode === 'edit' ? 'PUT' : mode === 'add' ? 'POST' : 'DELETE',
         headers: headers,
-        body: form,
+        body: form
       }).catch((err) => console.log(`Error in ${mode}ing recipe: ` + err));
       setModal(false);
     } else {
@@ -111,7 +110,7 @@ export default function RecipeModalForm(props) {
                       setFormData((current) => {
                         return {
                           ...current,
-                          ingredients: [...current.ingredients, ''],
+                          ingredients: [...current.ingredients, '']
                         };
                       })
                     }
@@ -171,7 +170,7 @@ export default function RecipeModalForm(props) {
                       setFormData((current) => {
                         return {
                           ...current,
-                          method: [...current.method, ''],
+                          method: [...current.method, '']
                         };
                       })
                     }
